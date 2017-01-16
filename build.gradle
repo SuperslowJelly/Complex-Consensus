@@ -39,6 +39,8 @@ shadowJar {
 
 build.dependsOn shadowJar
 
+signArchives.mustRunAfter shadowJar
+
 spongestart {
     eula true
     spongeVanillaBuild '1.10.2-5.1.0-BETA-366'
