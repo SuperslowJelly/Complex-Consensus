@@ -14,7 +14,7 @@ public class Config {
     public static final TypeToken<Config> type = TypeToken.of(Config.class);
     @Setting("enabled-modes") public List<Mode> enabledModes = Collections.emptyList();
     public enum Mode {
-        BAN, MUTE, KICK, TIME, DUMMY
+        BAN, MUTE, KICK, TIME
     }
     @Setting public BanModule ban = new BanModule();
     @Setting public KickModule kick = new KickModule();
