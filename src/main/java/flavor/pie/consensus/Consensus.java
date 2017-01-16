@@ -74,7 +74,7 @@ public class Consensus {
                 .executor(this::ban)
                 .arguments(
                         GenericArguments.player(Text.of("player")),
-                        GenericArguments.optional(MoreArguments.duration(Text.of("duration"))),
+                        GenericArguments.optionalWeak(MoreArguments.duration(Text.of("duration"))),
                         MoreArguments.text(Text.of("reason"), false, true)
                 )
                 .build();
@@ -82,7 +82,7 @@ public class Consensus {
                 .executor(this::mute)
                 .arguments(
                         GenericArguments.player(Text.of("player")),
-                        GenericArguments.optional(MoreArguments.duration(Text.of("duration"))),
+                        GenericArguments.optionalWeak(MoreArguments.duration(Text.of("duration"))),
                         MoreArguments.text(Text.of("reason"), false, true)
                 )
                 .build();
