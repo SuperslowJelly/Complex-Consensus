@@ -139,6 +139,15 @@ public class Consensus {
                     .build();
             poll.child(time, "time");
         }
+        if (config.enabledModes.contains(Config.Mode.COMMAND)) {
+            CommandSpec command = CommandSpec.builder()
+                    .executor(this::command)
+                    .arguments(
+                            GenericArguments.remainingJoinedStrings(Text.of("command"))
+                    )
+                    .build();
+            poll.child(command, "command");
+        }
         CommandSpec dummy = CommandSpec.builder()
                 .executor(this::dummy)
                 .arguments(
@@ -164,7 +173,7 @@ public class Consensus {
         if (config.ban.minPlayers != 0 && config.ban.minPlayers < size) {
             throw new CommandException(Text.of("Cannot voteban; not enough players online (required: ", config.ban.minPlayers, ")!"));
         }
-        startVote(src, Text.of(TextColors.RED, "ban ", p.getName(), " for ", reason, " for ", durationToString(duration)), i -> {
+        startBooleanVote(src, Text.of(TextColors.RED, "ban ", p.getName(), " for ", reason, " for ", durationToString(duration)), i -> {
             if (config.ban.majority * (double) size <= i) {
                 game.getServiceManager().provideUnchecked(BanService.class).addBan(Ban.builder()
                         .type(BanTypes.PROFILE)
@@ -197,7 +206,7 @@ public class Consensus {
         if (config.mute.minPlayers != 0 && config.mute.minPlayers < size) {
             throw new CommandException(Text.of("Cannot votemute; not enough players online (required: ", config.mute.minPlayers, ")!"));
         }
-        startVote(src, Text.of(TextColors.YELLOW, "mute ", p.getName(), " for ", reason, " for ", durationToString(duration)), i -> {
+        startBooleanVote(src, Text.of(TextColors.YELLOW, "mute ", p.getName(), " for ", reason, " for ", durationToString(duration)), i -> {
             if (config.mute.majority * (double) size <= i) {
                 mutes.put(p.getUniqueId(), Instant.now().plus(duration));
                 return true;
@@ -218,7 +227,7 @@ public class Consensus {
         if (config.kick.minPlayers != 0 && config.kick.minPlayers < size) {
             throw new CommandException(Text.of("Cannot votekick; not enough players online (required: ", config.kick.minPlayers, ")!"));
         }
-        startVote(src, Text.of(TextColors.GOLD, "kick ", p.getName(), " for ", reason), i -> {
+        startBooleanVote(src, Text.of(TextColors.GOLD, "kick ", p.getName(), " for ", reason), i -> {
             if (config.mute.majority * (double) size <= i) {
                 p.kick(Text.of("Kicked by majority vote for ", reason));
                 return true;
@@ -249,7 +258,7 @@ public class Consensus {
         if (config.time.minPlayers != 0 && config.time.minPlayers < size) {
             throw new CommandException(Text.of("Cannot vote to change the time; not enough players online (required: ", config.time.minPlayers, ")!"));
         }
-        startVote(src, Text.of(TextColors.AQUA, "change the time to ", time, " in world ", world.getWorldName()), i -> {
+        startBooleanVote(src, Text.of(TextColors.AQUA, "change the time to ", time, " in world ", world.getWorldName()), i -> {
             if (config.time.majority * (double) size <= i) {
                 long worldTime = world.getWorldTime();
                 int currentTime = (int) (worldTime % 24_000);
@@ -268,16 +277,37 @@ public class Consensus {
         return CommandResult.success();
     }
 
+    public CommandResult command(CommandSource src, CommandContext args) throws CommandException {
+        String command = args.<String>getOne("command").get();
+        if ((config.command.override == null || !src.hasPermission(config.command.override))
+                && !config.command.allowedCommands.stream().filter(command::startsWith).findAny().isPresent()) {
+            throw new CommandException(Text.of("This command cannot be used!"));
+        }
+        int size = game.getServer().getOnlinePlayers().size();
+        if (size < config.command.minPlayers) {
+            throw new CommandException(Text.of("Cannot vote to run a command; not enough players online (required: ", config.command.minPlayers, ")!"));
+        }
+        startBooleanVote(src, Text.of(TextColors.WHITE, "run the command ", command), i -> {
+            if (config.command.majority * (double) size <= i) {
+                game.getCommandManager().process(game.getServer().getConsole(), command);
+                return true;
+            } else {
+                return false;
+            }
+        }, config.command.duration);
+        return CommandResult.success();
+    }
+
     public CommandResult dummy(CommandSource src, CommandContext args) throws CommandException {
         Text text = args.<Text>getOne("text").get();
         Duration duration = args.<Duration>getOne("duration").orElse(Duration.of(1, ChronoUnit.MINUTES));
         double majority = args.<Double>getOne("majority").get();
         int size = game.getServer().getOnlinePlayers().size();
-        startVote(src, text, i -> majority * (double) size <= i, duration);
+        startBooleanVote(src, text, i -> majority * (double) size <= i, duration);
         return CommandResult.success();
     }
 
-    public void startVote(CommandSource creator, Text action, IntPredicate consumer, Duration duration) {
+    public void startBooleanVote(CommandSource creator, Text action, IntPredicate consumer, Duration duration) {
         Set<UUID> set = new HashSet<>();
         Text msg = Text.of(TextColors.GREEN, creator.getName(), " has begun a vote to ", action, "! Click ", Text.builder("here").color(TextColors.GOLD)
                 .onHover(TextActions.showText(Text.of(TextColors.GREEN, "Click me!"))).onClick(TextActions.executeCallback(src -> {
