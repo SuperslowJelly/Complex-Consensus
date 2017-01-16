@@ -151,11 +151,11 @@ public class Consensus {
         startVote(src, Text.of(TextColors.RED, "ban ", p.getName(), " for ", reason, " for ", duration.toString().replaceAll("[PT]", "")), i -> {
             if (config.ban.majority * (double) size <= i) {
                 game.getServiceManager().provideUnchecked(BanService.class).addBan(Ban.builder()
+                        .type(BanTypes.PROFILE)
                         .profile(p.getProfile())
                         .expirationDate(Instant.now().plus(duration))
                         .reason(reason)
                         .source(Text.of("Majority vote"))
-                        .type(BanTypes.PROFILE)
                         .startDate(Instant.now())
                         .build());
                 return true;
