@@ -50,7 +50,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.IntPredicate;
 
-@Plugin(id = "consensus", name = "Consensus", version = "1.0.0")
+@Plugin(id = "consensus", name = "Consensus", version = "1.0.0", authors = "pie_flavor", description = "Allows players to vote for things to happen.")
 public class Consensus {
     @Inject
     Game game;
