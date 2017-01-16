@@ -70,6 +70,31 @@ public class Consensus {
 
     @Listener
     public void init(GameInitializationEvent e) {
+        registerCommands();
+    }
+
+    @Listener
+    public void reload(GameReloadEvent e) throws IOException, ObjectMappingException {
+        loadConfig();
+    }
+
+    public void loadConfig() throws IOException, ObjectMappingException {
+        Asset cfg = game.getAssetManager().getAsset(this, "default.conf").get();
+        try {
+            if (!Files.exists(path)) {
+                cfg.copyToFile(path);
+            }
+            config = loader.load().getValue(Config.type);
+        } catch (IOException | ObjectMappingException ex) {
+            if (config == null) {
+                config = HoconConfigurationLoader.builder().setURL(cfg.getUrl()).build().load(loader.getDefaultOptions()).getValue(Config.type);
+            }
+            throw ex;
+        }
+    }
+
+    private void registerCommands() {
+        game.getCommandManager().getOwnedBy(this).forEach(game.getCommandManager()::removeMapping);
         CommandSpec ban = CommandSpec.builder()
                 .executor(this::ban)
                 .arguments(
@@ -115,26 +140,6 @@ public class Consensus {
                 .child(dummy, "dummy")
                 .build();
         game.getCommandManager().register(this, poll, "poll");
-    }
-
-    @Listener
-    public void reload(GameReloadEvent e) throws IOException, ObjectMappingException {
-        loadConfig();
-    }
-
-    public void loadConfig() throws IOException, ObjectMappingException {
-        Asset cfg = game.getAssetManager().getAsset(this, "default.conf").get();
-        try {
-            if (!Files.exists(path)) {
-                cfg.copyToFile(path);
-            }
-            config = loader.load().getValue(Config.type);
-        } catch (IOException | ObjectMappingException ex) {
-            if (config == null) {
-                config = HoconConfigurationLoader.builder().setURL(cfg.getUrl()).build().load(loader.getDefaultOptions()).getValue(Config.type);
-            }
-            throw ex;
-        }
     }
 
     public CommandResult ban(CommandSource src, CommandContext args) throws CommandException {
