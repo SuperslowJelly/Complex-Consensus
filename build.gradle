@@ -29,6 +29,8 @@ dependencies {
     }
 }
 
+tasks.getByPath(':jar').enabled = false
+
 shadowJar {
     classifier = null
     configurations = [project.configurations.shadow]
