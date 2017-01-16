@@ -161,7 +161,7 @@ public class Consensus {
         if (config.ban.minPlayers != 0 && config.ban.minPlayers < size) {
             throw new CommandException(Text.of("Cannot voteban; not enough players online (required: ", config.ban.minPlayers, ")!"));
         }
-        startVote(src, Text.of(TextColors.RED, "ban ", p.getName(), " for ", reason, " for ", duration.toString().replaceAll("[PT]", "")), i -> {
+        startVote(src, Text.of(TextColors.RED, "ban ", p.getName(), " for ", reason, " for ", durationToString(duration)), i -> {
             if (config.ban.majority * (double) size <= i) {
                 game.getServiceManager().provideUnchecked(BanService.class).addBan(Ban.builder()
                         .type(BanTypes.PROFILE)
@@ -171,7 +171,7 @@ public class Consensus {
                         .source(Text.of("Majority vote"))
                         .startDate(Instant.now())
                         .build());
-                p.kick(Text.of("Banned by majority vote for ", reason, " for ", duration.toString().replaceAll("[PT]", "")));
+                p.kick(Text.of("Banned by majority vote for ", reason, " for ", durationToString(duration)));
                 return true;
             } else {
                 return false;
@@ -191,7 +191,7 @@ public class Consensus {
         if (config.mute.minPlayers != 0 && config.mute.minPlayers < size) {
             throw new CommandException(Text.of("Cannot votemute; not enough players online (required: ", config.mute.minPlayers, ")!"));
         }
-        startVote(src, Text.of(TextColors.YELLOW, "mute ", p.getName(), " for ", reason, " for ", duration.toString().replaceAll("[PT]", "")), i -> {
+        startVote(src, Text.of(TextColors.YELLOW, "mute ", p.getName(), " for ", reason, " for ", durationToString(duration)), i -> {
             if (config.mute.majority * (double) size <= i) {
                 mutes.put(p.getUniqueId(), Instant.now().plus(duration));
                 return true;
@@ -301,8 +301,12 @@ public class Consensus {
         Instant now = Instant.now();
         if (mute != null && mute.isAfter(now)) {
             p.playSound(SoundTypes.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, p.getLocation().getPosition(), 10.0);
-            p.sendMessage(ChatTypes.ACTION_BAR, Text.of("You are muted for another ", Duration.between(now, mute).toString().replaceAll("[PT]", "")));
+            p.sendMessage(ChatTypes.ACTION_BAR, Text.of("You are muted for another ", durationToString(Duration.between(now, mute))));
             e.setCancelled(true);
         }
+    }
+
+    private String durationToString(Duration duration) {
+        return duration.toString().replaceAll("[PT]", "");
     }
 }
