@@ -154,6 +154,9 @@ public class Consensus {
         Player p = args.<Player>getOne("player").get();
         Text reason = args.<Text>getOne("reason").get();
         Duration duration = args.<Duration>getOne("duration").orElse(config.ban.maxDuration);
+        if (duration.compareTo(config.ban.maxDuration) > 0 && (config.ban.override == null || !src.hasPermission(config.ban.override))) {
+            throw new CommandException(Text.of("The maximum duration that players can be votebanned for is ", durationToString(config.ban.maxDuration)));
+        }
         if (config.ban.exempt != null && p.hasPermission(config.ban.exempt) && (config.ban.override == null || !src.hasPermission(config.ban.override))) {
             throw new CommandException(Text.of("This person cannot be banned!"));
         }
@@ -184,6 +187,9 @@ public class Consensus {
         Player p = args.<Player>getOne("player").get();
         Text reason = args.<Text>getOne("reason").get();
         Duration duration = args.<Duration>getOne("duration").orElse(config.mute.maxDuration);
+        if (duration.compareTo(config.mute.maxDuration) > 0 && (config.mute.override == null || !src.hasPermission(config.mute.override))) {
+            throw new CommandException(Text.of("The maximum duration that players can be votemuted for is ", durationToString(config.mute.maxDuration)));
+        }
         if (config.mute.exempt != null && p.hasPermission(config.mute.exempt) && (config.mute.override == null || !src.hasPermission(config.mute.override))) {
             throw new CommandException(Text.of("This person cannot be banned!"));
         }
