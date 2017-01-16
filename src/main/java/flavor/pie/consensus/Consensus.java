@@ -200,7 +200,7 @@ public class Consensus {
         }
         startVote(src, Text.of(TextColors.GOLD, "kick ", p.getName(), " for ", reason), i -> {
             if (config.mute.majority * (double) size <= i) {
-                p.kick(reason);
+                p.kick(Text.of("Kicked by majority vote for ", reason));
                 return true;
             } else {
                 return false;
