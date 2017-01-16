@@ -23,6 +23,9 @@ If no duration is specified, the configured maximum duration is used.
 `time <time> [world]`: Votes to set the time of day in the specified world. 
 If no world is specified, the poll creator's world is used.
 
+`command <command>`: Votes to run the specified command from the console's perspective.
+Note that any command must be whitelisted before it can be run.
+
 `dummy <text> [majority] [duration]`: Makes an empty vote; i.e. one that occurs and executes but doesn't actually do anything. 
 Useful for personal polls, admin surveys, etc. 
 
@@ -50,6 +53,10 @@ And the third, `override`, is the permission for a player to override the previo
 `mute{}`: The `mute` mode has three settings, `max-duration`, `exempt`, and `override`. See `ban{}` for details.
 
 `time{}`: The `time` mode doesn't have any settings of its own, but still has the aforementioned three common settings.
+
+`command{}`: The `command` mode has one unique setting, `allowed-commands[]`. This is a list of commands
+that are allowed to be used. It supports subcommands, such as `warp set`. `command` also has
+`override`, described in `ban{}`.
 
 ### Changelog
 
