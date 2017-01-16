@@ -76,6 +76,7 @@ public class Consensus {
     @Listener
     public void reload(GameReloadEvent e) throws IOException, ObjectMappingException {
         loadConfig();
+        registerCommands();
     }
 
     public void loadConfig() throws IOException, ObjectMappingException {
