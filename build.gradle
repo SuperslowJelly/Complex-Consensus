@@ -32,6 +32,7 @@ dependencies {
 shadowJar {
     classifier = null
     configurations = [project.configurations.shadow]
+    relocate 'flavor.pie.util', 'flavor.pie.consensus.util'
 }
 
 build.dependsOn shadowJar
