@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'flavor.pie.promptsign' version '1.0.1'
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
+    id 'com.qixalite.spongestart' version '1.5.2'
+}
+
+group 'flavor.pie'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repo.spongepowered.org/maven/'
+    }
+    maven {
+        url 'https://jitpack.io/'
+    }
+}
+
+configurations {
+    compile.extendsFrom shadow
+}
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:5.0.0'
+    shadow 'com.github.pie-flavor:MoreArguments:master-SNAPSHOT'
+}
+
+shadowJar {
+    classifier = null
+    configurations = [project.configurations.shadow]
+}
+
+build.dependsOn shadowJar
+
+spongestart {
+    eula true
+    spongeVanillaBuild '1.10.2-5.1.0-BETA-366'
+}
