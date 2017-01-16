@@ -61,3 +61,4 @@ that are allowed to be used. It supports subcommands, such as `warp set`. `comma
 ### Changelog
 
 1.0.0: By majority vote, these details won't be released.
+1.1.0: Added the `command` mode.
