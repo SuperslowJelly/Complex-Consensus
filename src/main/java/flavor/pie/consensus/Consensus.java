@@ -96,36 +96,49 @@ public class Consensus {
 
     private void registerCommands() {
         game.getCommandManager().getOwnedBy(this).forEach(game.getCommandManager()::removeMapping);
-        CommandSpec ban = CommandSpec.builder()
-                .executor(this::ban)
-                .arguments(
-                        GenericArguments.player(Text.of("player")),
-                        GenericArguments.optionalWeak(MoreArguments.duration(Text.of("duration"))),
-                        MoreArguments.text(Text.of("reason"), false, true)
-                )
-                .build();
-        CommandSpec mute = CommandSpec.builder()
-                .executor(this::mute)
-                .arguments(
-                        GenericArguments.player(Text.of("player")),
-                        GenericArguments.optionalWeak(MoreArguments.duration(Text.of("duration"))),
-                        MoreArguments.text(Text.of("reason"), false, true)
-                )
-                .build();
-        CommandSpec kick = CommandSpec.builder()
-                .executor(this::kick)
-                .arguments(
-                        GenericArguments.player(Text.of("player")),
-                        MoreArguments.text(Text.of("reason"), false, true)
-                )
-                .build();
-        CommandSpec time = CommandSpec.builder()
-                .executor(this::time)
-                .arguments(
-                        GenericArguments.integer(Text.of("time")),
-                        GenericArguments.optional(GenericArguments.world(Text.of("world")))
-                )
-                .build();
+        CommandSpec.Builder poll = CommandSpec.builder();
+        if (config.enabledModes.contains(Config.Mode.BAN)) {
+            CommandSpec ban = CommandSpec.builder()
+                    .executor(this::ban)
+                    .arguments(
+                            GenericArguments.player(Text.of("player")),
+                            GenericArguments.optionalWeak(MoreArguments.duration(Text.of("duration"))),
+                            MoreArguments.text(Text.of("reason"), false, true)
+                    )
+                    .build();
+            poll.child(ban, "ban");
+        }
+        if (config.enabledModes.contains(Config.Mode.MUTE)) {
+            CommandSpec mute = CommandSpec.builder()
+                    .executor(this::mute)
+                    .arguments(
+                            GenericArguments.player(Text.of("player")),
+                            GenericArguments.optionalWeak(MoreArguments.duration(Text.of("duration"))),
+                            MoreArguments.text(Text.of("reason"), false, true)
+                    )
+                    .build();
+            poll.child(mute, "mute");
+        }
+        if (config.enabledModes.contains(Config.Mode.KICK)) {
+            CommandSpec kick = CommandSpec.builder()
+                    .executor(this::kick)
+                    .arguments(
+                            GenericArguments.player(Text.of("player")),
+                            MoreArguments.text(Text.of("reason"), false, true)
+                    )
+                    .build();
+            poll.child(kick, "kick");
+        }
+        if (config.enabledModes.contains(Config.Mode.TIME)) {
+            CommandSpec time = CommandSpec.builder()
+                    .executor(this::time)
+                    .arguments(
+                            GenericArguments.integer(Text.of("time")),
+                            GenericArguments.optional(GenericArguments.world(Text.of("world")))
+                    )
+                    .build();
+            poll.child(time, "time");
+        }
         CommandSpec dummy = CommandSpec.builder()
                 .executor(this::dummy)
                 .arguments(
@@ -133,14 +146,8 @@ public class Consensus {
                         GenericArguments.optionalWeak(GenericArguments.doubleNum(Text.of("majority")), 0.5),
                         GenericArguments.optional(MoreArguments.duration(Text.of("duration")))
                 ).build();
-        CommandSpec poll = CommandSpec.builder()
-                .child(ban, "ban")
-                .child(mute, "mute")
-                .child(kick, "kick")
-                .child(time, "time")
-                .child(dummy, "dummy")
-                .build();
-        game.getCommandManager().register(this, poll, "poll");
+        poll.child(dummy, "dummy");
+        game.getCommandManager().register(this, poll.build(), "poll");
     }
 
     public CommandResult ban(CommandSource src, CommandContext args) throws CommandException {
