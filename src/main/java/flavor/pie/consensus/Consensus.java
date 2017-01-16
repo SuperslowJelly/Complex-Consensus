@@ -158,6 +158,7 @@ public class Consensus {
                         .source(Text.of("Majority vote"))
                         .startDate(Instant.now())
                         .build());
+                p.kick(Text.of("Banned by majority vote for ", reason, " for ", duration.toString().replaceAll("[PT]", "")));
                 return true;
             } else {
                 return false;
