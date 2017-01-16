@@ -24,7 +24,9 @@ configurations {
 
 dependencies {
     compile 'org.spongepowered:spongeapi:5.0.0'
-    shadow 'com.github.pie-flavor:MoreArguments:master-SNAPSHOT'
+    shadow ('com.github.pie-flavor:MoreArguments:master-SNAPSHOT') {
+        setTransitive(false)
+    }
 }
 
 shadowJar {
