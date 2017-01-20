@@ -25,16 +25,18 @@ configurations {
 
 dependencies {
     compile 'org.spongepowered:spongeapi:5.0.0'
-    shadow ('com.github.pie-flavor:MoreArguments:master-SNAPSHOT') {
-        setTransitive(false)
-    }
+    shadow 'com.github.pie-flavor:MoreArguments:master-SNAPSHOT'
 }
 
-task jar(type: ShadowJar, overwrite: true) {
+tasks.getByPath(':jar').enabled = false
+
+shadowJar {
     classifier = null
     configurations = [project.configurations.shadow]
     relocate 'flavor.pie.util', 'flavor.pie.consensus.util'
 }
+build.dependsOn shadowJar
+signArchives.dependsOn shadowJar
 
 spongestart {
     eula true
