@@ -170,7 +170,7 @@ public class Consensus {
             throw new CommandException(Text.of("This person cannot be banned!"));
         }
         int size = game.getServer().getOnlinePlayers().size();
-        if (config.ban.minPlayers != 0 && config.ban.minPlayers < size) {
+        if (config.ban.minPlayers != 0 && size < config.ban.minPlayers) {
             throw new CommandException(Text.of("Cannot voteban; not enough players online (required: ", config.ban.minPlayers, ")!"));
         }
         startBooleanVote(src, Text.of(TextColors.RED, "ban ", p.getName(), " for ", reason, " for ", durationToString(duration)), i -> {
@@ -203,7 +203,7 @@ public class Consensus {
             throw new CommandException(Text.of("This person cannot be banned!"));
         }
         int size = game.getServer().getOnlinePlayers().size();
-        if (config.mute.minPlayers != 0 && config.mute.minPlayers < size) {
+        if (config.mute.minPlayers != 0 && size < config.mute.minPlayers) {
             throw new CommandException(Text.of("Cannot votemute; not enough players online (required: ", config.mute.minPlayers, ")!"));
         }
         startBooleanVote(src, Text.of(TextColors.YELLOW, "mute ", p.getName(), " for ", reason, " for ", durationToString(duration)), i -> {
@@ -224,7 +224,7 @@ public class Consensus {
             throw new CommandException(Text.of("This person cannot be kicked!"));
         }
         int size = game.getServer().getOnlinePlayers().size();
-        if (config.kick.minPlayers != 0 && config.kick.minPlayers < size) {
+        if (config.kick.minPlayers != 0 && size < config.kick.minPlayers) {
             throw new CommandException(Text.of("Cannot votekick; not enough players online (required: ", config.kick.minPlayers, ")!"));
         }
         startBooleanVote(src, Text.of(TextColors.GOLD, "kick ", p.getName(), " for ", reason), i -> {
@@ -255,7 +255,7 @@ public class Consensus {
             }
         }
         int size = game.getServer().getOnlinePlayers().size();
-        if (config.time.minPlayers != 0 && config.time.minPlayers < size) {
+        if (config.time.minPlayers != 0 && size < config.time.minPlayers) {
             throw new CommandException(Text.of("Cannot vote to change the time; not enough players online (required: ", config.time.minPlayers, ")!"));
         }
         startBooleanVote(src, Text.of(TextColors.AQUA, "change the time to ", time, " in world ", world.getWorldName()), i -> {
