@@ -2,9 +2,11 @@ package flavor.pie.consensus;
 
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.command.CommandSource;
@@ -50,6 +52,8 @@ public class Consensus {
     ConfigurationLoader<CommentedConfigurationNode> loader;
     @Inject
     Commands commands;
+    @Inject
+    Logger logger;
 
     Task task;
     Config config;
@@ -99,7 +103,13 @@ public class Consensus {
         if (!Files.exists(path)) {
             cfg.copyToFile(path);
         }
-        config = loader.load().getValue(Config.type);
+        ConfigurationNode node = loader.load();
+        if (node.getNode("version").getInt() < 2) {
+            logger.info("Updating old config");
+            ConfigUpdater.t2(node);
+            loader.save(node);
+        }
+        config = node.getValue(Config.type);
     }
 
     @Listener
