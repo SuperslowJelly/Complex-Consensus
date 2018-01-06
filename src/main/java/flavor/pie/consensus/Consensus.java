@@ -2,12 +2,10 @@ package flavor.pie.consensus;
 
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
-import flavor.pie.util.arguments.MoreArguments;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.command.CommandException;
@@ -32,6 +30,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.ban.Ban;
 import org.spongepowered.api.util.ban.BanTypes;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -50,12 +49,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.IntPredicate;
 
+@SuppressWarnings("NullableProblems")
 @Plugin(id = "consensus", name = "Consensus", version = "1.1.2", authors = "pie_flavor", description = "Allows players to vote for things to happen.")
 public class Consensus {
     @Inject
     Game game;
-    @Inject
-    Logger logger;
     @Inject @DefaultConfig(sharedRoot = true)
     Path path;
     @Inject @DefaultConfig(sharedRoot = true)
@@ -102,8 +100,8 @@ public class Consensus {
                     .executor(this::ban)
                     .arguments(
                             GenericArguments.player(Text.of("player")),
-                            GenericArguments.optionalWeak(MoreArguments.duration(Text.of("duration"))),
-                            MoreArguments.text(Text.of("reason"), false, true)
+                            GenericArguments.optionalWeak(GenericArguments.duration(Text.of("duration"))),
+                            GenericArguments.text(Text.of("reason"), TextSerializers.FORMATTING_CODE, true)
                     )
                     .build();
             poll.child(ban, "ban");
@@ -113,8 +111,8 @@ public class Consensus {
                     .executor(this::mute)
                     .arguments(
                             GenericArguments.player(Text.of("player")),
-                            GenericArguments.optionalWeak(MoreArguments.duration(Text.of("duration"))),
-                            MoreArguments.text(Text.of("reason"), false, true)
+                            GenericArguments.optionalWeak(GenericArguments.duration(Text.of("duration"))),
+                            GenericArguments.text(Text.of("reason"), TextSerializers.FORMATTING_CODE, true)
                     )
                     .build();
             poll.child(mute, "mute");
@@ -124,7 +122,7 @@ public class Consensus {
                     .executor(this::kick)
                     .arguments(
                             GenericArguments.player(Text.of("player")),
-                            MoreArguments.text(Text.of("reason"), false, true)
+                            GenericArguments.text(Text.of("reason"), TextSerializers.FORMATTING_CODE, true)
                     )
                     .build();
             poll.child(kick, "kick");
@@ -151,9 +149,9 @@ public class Consensus {
         CommandSpec dummy = CommandSpec.builder()
                 .executor(this::dummy)
                 .arguments(
-                        MoreArguments.text(Text.of("text"), false, false),
+                        GenericArguments.text(Text.of("text"), TextSerializers.FORMATTING_CODE, true),
                         GenericArguments.optionalWeak(GenericArguments.doubleNum(Text.of("majority")), 0.5),
-                        GenericArguments.optional(MoreArguments.duration(Text.of("duration")))
+                        GenericArguments.optional(GenericArguments.duration(Text.of("duration")))
                 ).build();
         poll.child(dummy, "dummy");
         game.getCommandManager().register(this, poll.build(), "poll");
@@ -280,7 +278,7 @@ public class Consensus {
     public CommandResult command(CommandSource src, CommandContext args) throws CommandException {
         String command = args.<String>getOne("command").get();
         if ((config.command.override == null || !src.hasPermission(config.command.override))
-                && !config.command.allowedCommands.stream().filter(command::startsWith).findAny().isPresent()) {
+                && config.command.allowedCommands.stream().noneMatch(command::startsWith)) {
             throw new CommandException(Text.of("This command cannot be used!"));
         }
         int size = game.getServer().getOnlinePlayers().size();
