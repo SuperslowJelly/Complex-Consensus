@@ -258,7 +258,7 @@ public class Commands {
         if (plugin.config.weather.minPlayers != 0 && size < plugin.config.time.minPlayers) {
             throw new CommandException(Text.of("Cannot vote to change the weather; not enough players online (required: ", plugin.config.weather.minPlayers, ")!"));
         }
-        plugin.startBooleanVote(src, Text.of(TextColors.DARK_AQUA, "change the weather to ", weather, " in world ", world.getName()), i -> {
+        plugin.startBooleanVote(src, Text.of(TextColors.DARK_AQUA, "change the weather to ", weather.getName(), " in world ", world.getName()), i -> {
             if (plugin.config.weather.majority * (double) size <= i) {
                 world.setWeather(weather);
                 return true;
