@@ -75,7 +75,7 @@ public class Config {
     }
 
     public enum ListType {
-        WHITELIST, BLACKLIST
+        @SuppressWarnings("unused") WHITELIST, BLACKLIST
     }
 
 }
