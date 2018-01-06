@@ -52,14 +52,17 @@ import java.util.function.IntPredicate;
 @SuppressWarnings("NullableProblems")
 @Plugin(id = "consensus", name = "Consensus", version = "1.1.2", authors = "pie_flavor", description = "Allows players to vote for things to happen.")
 public class Consensus {
+
     @Inject
     Game game;
     @Inject @DefaultConfig(sharedRoot = true)
     Path path;
     @Inject @DefaultConfig(sharedRoot = true)
     ConfigurationLoader<CommentedConfigurationNode> loader;
+
     Config config;
     Map<UUID, Instant> mutes = new HashMap<>();
+
     @Listener
     public void preInit(GamePreInitializationEvent e) throws IOException, ObjectMappingException {
         loader.getDefaultOptions().getSerializers().registerType(TypeToken.of(Duration.class), new DurationSerializer());
@@ -95,6 +98,7 @@ public class Consensus {
     private void registerCommands() {
         game.getCommandManager().getOwnedBy(this).forEach(game.getCommandManager()::removeMapping);
         CommandSpec.Builder poll = CommandSpec.builder();
+
         if (config.enabledModes.contains(Config.Mode.BAN)) {
             CommandSpec ban = CommandSpec.builder()
                     .executor(this::ban)
@@ -106,6 +110,7 @@ public class Consensus {
                     .build();
             poll.child(ban, "ban");
         }
+
         if (config.enabledModes.contains(Config.Mode.MUTE)) {
             CommandSpec mute = CommandSpec.builder()
                     .executor(this::mute)
@@ -117,6 +122,7 @@ public class Consensus {
                     .build();
             poll.child(mute, "mute");
         }
+
         if (config.enabledModes.contains(Config.Mode.KICK)) {
             CommandSpec kick = CommandSpec.builder()
                     .executor(this::kick)
@@ -127,6 +133,7 @@ public class Consensus {
                     .build();
             poll.child(kick, "kick");
         }
+
         if (config.enabledModes.contains(Config.Mode.TIME)) {
             CommandSpec time = CommandSpec.builder()
                     .executor(this::time)
@@ -137,6 +144,7 @@ public class Consensus {
                     .build();
             poll.child(time, "time");
         }
+
         if (config.enabledModes.contains(Config.Mode.COMMAND)) {
             CommandSpec command = CommandSpec.builder()
                     .executor(this::command)
@@ -146,6 +154,7 @@ public class Consensus {
                     .build();
             poll.child(command, "command");
         }
+
         CommandSpec dummy = CommandSpec.builder()
                 .executor(this::dummy)
                 .arguments(
@@ -153,6 +162,7 @@ public class Consensus {
                         GenericArguments.optionalWeak(GenericArguments.doubleNum(Text.of("majority")), 0.5),
                         GenericArguments.optional(GenericArguments.duration(Text.of("duration")))
                 ).build();
+
         poll.child(dummy, "dummy");
         game.getCommandManager().register(this, poll.build(), "poll");
     }
