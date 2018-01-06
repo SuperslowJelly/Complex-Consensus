@@ -20,7 +20,8 @@ public class WeatherListener {
         if (plugin.config.triggers.weather.worlds.contains(e.getTargetWorld().getName()) ^
                 plugin.config.triggers.weather.type == Config.ListType.BLACKLIST) {
             int size = Sponge.getServer().getOnlinePlayers().size();
-            if (plugin.config.weather.minPlayers > 0 && plugin.config.weather.minPlayers <= size) {
+            System.out.println(plugin.config.weather.minPlayers);
+            if (plugin.config.weather.minPlayers == 0 || plugin.config.weather.minPlayers <= size) {
                 plugin.startBooleanVote(null,
                         Text.of(TextColors.DARK_AQUA, "change the weather to ", Weathers.CLEAR, " in world ",
                                 e.getTargetWorld().getName()), i -> {

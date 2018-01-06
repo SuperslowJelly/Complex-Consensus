@@ -21,7 +21,7 @@ public class TimeTask implements Runnable {
     @Override
     public void run() {
         int size = Sponge.getServer().getOnlinePlayers().size();
-        if (plugin.config.time.minPlayers != 0 && plugin.config.time.minPlayers <= size) {
+        if (plugin.config.time.minPlayers == 0 || plugin.config.time.minPlayers <= size) {
             Sponge.getServer().getWorlds().stream().filter(
                     w -> plugin.config.triggers.time.worlds.contains(w.getName()) ^
                             plugin.config.triggers.time.type == Config.ListType.BLACKLIST)
