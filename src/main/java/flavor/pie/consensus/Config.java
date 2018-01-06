@@ -14,53 +14,68 @@ public class Config {
 
     public static final TypeToken<Config> type = TypeToken.of(Config.class);
 
-    @Setting("enabled-modes") public List<Mode> enabledModes = Collections.emptyList();
-
-    public enum Mode {
-        BAN, MUTE, KICK, TIME, COMMAND,
-    }
-
     @Setting public BanModule ban = new BanModule();
     @Setting public KickModule kick = new KickModule();
     @Setting public MuteModule mute = new MuteModule();
     @Setting public TimeModule time = new TimeModule();
     @Setting public CommandModule command = new CommandModule();
+    @Setting public TriggerHolder triggers = new TriggerHolder();
+    @Setting public WeatherModule weather = new WeatherModule();
 
     @ConfigSerializable
-    public static class BanModule extends Module {
+    public static class BanModule extends PollModule {
         @Setting("max-duration") public Duration maxDuration = Duration.of(1, ChronoUnit.DAYS);
-        @Setting public String exempt;
-        @Setting public String override;
     }
 
     @ConfigSerializable
-    public static class KickModule extends Module {
-        @Setting public String exempt;
-        @Setting public String override;
-    }
+    public static class KickModule extends PollModule { }
 
     @ConfigSerializable
-    public static class MuteModule extends Module {
-        @Setting public String exempt;
-        @Setting public String override;
+    public static class MuteModule extends PollModule {
         @Setting("max-duration") public Duration maxDuration = Duration.of(1, ChronoUnit.HOURS);
     }
 
     @ConfigSerializable
-    public static class TimeModule extends Module {
+    public static class TimeModule extends PollModule { }
 
+    @ConfigSerializable
+    public static class CommandModule extends PollModule {
+        @Setting("allowed-commands") public List<String> allowedCommands = Collections.emptyList();
     }
 
     @ConfigSerializable
-    public static class CommandModule extends Module {
-        @Setting("allowed-commands") public List<String> allowedCommands = Collections.emptyList();
-        @Setting public String override;
-    }
+    public static class WeatherModule extends PollModule { }
 
-    public static abstract class Module {
+    public static abstract class PollModule extends Module {
         @Setting public double majority = 0.5;
         @Setting("min-players") public int minPlayers = 10;
         @Setting public Duration duration = Duration.of(1, ChronoUnit.MINUTES);
+    }
+
+    public static abstract class Module {
+        @Setting public boolean enabled = false;
+    }
+
+    @ConfigSerializable
+    public static class TriggerHolder {
+        @Setting public TimeTriggerModule time = new TimeTriggerModule();
+        @Setting public WeatherTriggerModule weather = new WeatherTriggerModule();
+    }
+
+    @ConfigSerializable
+    public static class TimeTriggerModule extends Module {
+        @Setting public ListType type = ListType.BLACKLIST;
+        @Setting public List<String> worlds = Collections.emptyList();
+    }
+
+    @ConfigSerializable
+    public static class WeatherTriggerModule extends Module {
+        @Setting public ListType type = ListType.BLACKLIST;
+        @Setting public List<String> worlds = Collections.emptyList();
+    }
+
+    public enum ListType {
+        WHITELIST, BLACKLIST
     }
 
 }

@@ -35,8 +35,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.IntPredicate;
-import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 @Plugin(id = "consensus", name = "Consensus", version = "1.1.2", authors = "pie_flavor", description = "Allows players to vote for things to happen.")
 public class Consensus {
@@ -50,6 +52,7 @@ public class Consensus {
     @Inject
     Commands commands;
 
+    Task task;
     Config config;
     Map<UUID, Instant> mutes = new HashMap<>();
 
@@ -61,13 +64,31 @@ public class Consensus {
 
     @Listener
     public void init(GameInitializationEvent e) {
-        commands.registerCommands();
+        register();
     }
 
     @Listener
     public void reload(GameReloadEvent e) throws IOException, ObjectMappingException {
         loadConfig();
+        register();
+    }
+
+    private void register() {
         commands.registerCommands();
+        if (task != null) {
+            task.cancel();
+        }
+        if (config.triggers.time.enabled) {
+            task = Task.builder()
+                    .name("consensus-S-TimeChecker")
+                    .interval(10, TimeUnit.SECONDS)
+                    .execute(new TimeTask(this))
+                    .submit(this);
+        }
+        if (config.triggers.weather.enabled) {
+            game.getEventManager().registerListeners(this, new WeatherListener(this));
+        }
+
     }
 
     public void loadConfig() throws IOException, ObjectMappingException {
@@ -91,16 +112,18 @@ public class Consensus {
         Instant now = Instant.now();
         if (mute != null && mute.isAfter(now)) {
             p.playSound(SoundTypes.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, p.getLocation().getPosition(), 10.0);
-            p.sendMessage(ChatTypes.ACTION_BAR, Text.of("You are muted for another ", durationToString(Duration.between(now, mute))));
+            p.sendMessage(ChatTypes.ACTION_BAR, Text.of("You are muted for another ",
+                    Util.durationToString(Duration.between(now, mute))));
             e.setCancelled(true);
         }
     }
 
-    public void startBooleanVote(CommandSource creator, Text action, IntPredicate consumer, Duration duration) {
+    public void startBooleanVote(@Nullable CommandSource creator, Text action, IntPredicate consumer, Duration duration) {
         Set<UUID> set = new HashSet<>();
-        Text msg = Text.of(TextColors.GREEN, creator.getName(), " has begun a vote to ", action, "! Click ", Text.builder("here").color(TextColors.GOLD)
-                .onHover(
-                        TextActions.showText(Text.of(TextColors.GREEN, "Click me!"))).onClick(TextActions.executeCallback(src -> {
+        Text msg = Text.of(TextColors.GREEN, (creator != null ? creator.getName() : "The server")
+                , " has begun a vote to ", action, "! Click ", Text.builder("here").color(TextColors.GOLD)
+                .onHover(TextActions.showText(Text.of(TextColors.GREEN, "Click me!")))
+                .onClick(TextActions.executeCallback(src -> {
                     if (src instanceof Player) {
                         if (set.add(((Player) src).getUniqueId())) {
                             src.sendMessage(Text.of("Voted YES to ", action));
@@ -121,9 +144,4 @@ public class Consensus {
                 .submit(this);
     }
 
-    private final static Pattern DURATION_TO_STRING_PATTERN = Pattern.compile("[PT]");
-
-    String durationToString(Duration duration) {
-        return DURATION_TO_STRING_PATTERN.matcher(duration.toString()).replaceAll("");
-    }
 }
