@@ -17,7 +17,7 @@ public class WeatherListener {
 
     @Listener
     public void onWeatherChange(ChangeWorldWeatherEvent e) {
-        if (plugin.config.triggers.weather.worlds.contains(e.getTargetWorld().getName()) ^
+        if (!e.getWeather().equals(Weathers.CLEAR) && plugin.config.triggers.weather.worlds.contains(e.getTargetWorld().getName()) ^
                 plugin.config.triggers.weather.type == Config.ListType.BLACKLIST) {
             int size = Sponge.getServer().getOnlinePlayers().size();
             System.out.println(plugin.config.weather.minPlayers);
