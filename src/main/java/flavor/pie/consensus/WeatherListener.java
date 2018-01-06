@@ -26,7 +26,7 @@ public class WeatherListener {
                         Text.of(TextColors.DARK_AQUA, "change the weather to clear in world ",
                                 e.getTargetWorld().getName()), i -> {
                             if (plugin.config.weather.majority * (double) size <= i) {
-                                e.setWeather(Weathers.CLEAR);
+                                e.getTargetWorld().setWeather(Weathers.CLEAR);
                                 return true;
                             } else {
                                 return false;
