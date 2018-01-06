@@ -3,7 +3,6 @@ package flavor.pie.consensus;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Game;
@@ -93,17 +92,10 @@ public class Consensus {
 
     public void loadConfig() throws IOException, ObjectMappingException {
         Asset cfg = game.getAssetManager().getAsset(this, "default.conf").get();
-        try {
-            if (!Files.exists(path)) {
-                cfg.copyToFile(path);
-            }
-            config = loader.load().getValue(Config.type);
-        } catch (IOException | ObjectMappingException ex) {
-            if (config == null) {
-                config = HoconConfigurationLoader.builder().setURL(cfg.getUrl()).build().load(loader.getDefaultOptions()).getValue(Config.type);
-            }
-            throw ex;
+        if (!Files.exists(path)) {
+            cfg.copyToFile(path);
         }
+        config = loader.load().getValue(Config.type);
     }
 
     @Listener
