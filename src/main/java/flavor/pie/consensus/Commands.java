@@ -34,7 +34,7 @@ public class Commands {
     private Game game;
 
     void registerCommands() {
-        game.getCommandManager().getOwnedBy(this).forEach(game.getCommandManager()::removeMapping);
+        game.getCommandManager().getOwnedBy(plugin).forEach(game.getCommandManager()::removeMapping);
         CommandSpec.Builder poll = CommandSpec.builder();
 
         if (plugin.config.ban.enabled) {
@@ -113,7 +113,7 @@ public class Commands {
                 ).build();
 
         poll.child(dummy, "dummy");
-        game.getCommandManager().register(this, poll.build(), "poll");
+        game.getCommandManager().register(plugin, poll.build(), "poll");
     }
 
     public CommandResult ban(CommandSource src, CommandContext args) throws CommandException {
