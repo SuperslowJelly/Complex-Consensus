@@ -42,7 +42,7 @@ import java.util.function.IntPredicate;
 
 import javax.annotation.Nullable;
 
-@Plugin(id = "consensus", name = "Consensus", version = "1.2.0-SNAPSHOT", authors = "pie_flavor", description = "Allows players to vote for things to happen.")
+@Plugin(id = "consensus", name = "Consensus", version = "1.2.1-SNAPSHOT", authors = "pie_flavor", description = "Allows players to vote for things to happen.")
 public class Consensus {
 
     @Inject
