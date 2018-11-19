@@ -6,7 +6,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.bstats.sponge.MetricsLite;
+import org.bstats.sponge.MetricsLite2;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.asset.Asset;
@@ -57,7 +57,7 @@ public class Consensus {
     Logger logger;
     @SuppressWarnings("unused")
     @Inject
-    MetricsLite metrics;
+    MetricsLite2 metrics;
 
     Task task;
     Config config;
