@@ -14,14 +14,10 @@ public class Config {
 
     public static final TypeToken<Config> type = TypeToken.of(Config.class);
 
-    @Setting public KickModule kick = new KickModule();
     @Setting public TimeModule time = new TimeModule();
     @Setting public CommandModule command = new CommandModule();
     @Setting public TriggerHolder triggers = new TriggerHolder();
     @Setting public WeatherModule weather = new WeatherModule();
-
-    @ConfigSerializable
-    public static class KickModule extends PollModule { }
 
     @ConfigSerializable
     public static class TimeModule extends PollModule { }

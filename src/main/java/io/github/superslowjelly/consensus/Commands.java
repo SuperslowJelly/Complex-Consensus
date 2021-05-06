@@ -37,17 +37,6 @@ public class Commands {
         game.getCommandManager().getOwnedBy(plugin).forEach(game.getCommandManager()::removeMapping);
         CommandSpec.Builder poll = CommandSpec.builder();
 
-        if (plugin.config.kick.enabled) {
-            CommandSpec kick = CommandSpec.builder()
-                    .executor(this::kick)
-                    .arguments(
-                            GenericArguments.player(Text.of("player")),
-                            GenericArguments.text(Text.of("reason"), TextSerializers.FORMATTING_CODE, true)
-                    )
-                    .build();
-            poll.child(kick, "kick");
-        }
-
         if (plugin.config.time.enabled) {
             CommandSpec time = CommandSpec.builder()
                     .executor(this::time)
@@ -90,27 +79,6 @@ public class Commands {
 
         poll.child(dummy, "dummy");
         game.getCommandManager().register(plugin, poll.build(), "poll");
-    }
-
-    public CommandResult kick(CommandSource src, CommandContext args) throws CommandException {
-        Player p = args.<Player>getOne("player").get();
-        Text reason = args.<Text>getOne("reason").get();
-        if (p.hasPermission(Permissions.KICK_EXEMPT) && !src.hasPermission(Permissions.KICK_OVERRIDE)) {
-            throw new CommandException(Text.of("This person cannot be kicked!"));
-        }
-        int size = game.getServer().getOnlinePlayers().size();
-        if (plugin.config.kick.minPlayers != 0 && size < plugin.config.kick.minPlayers) {
-            throw new CommandException(Text.of("Cannot votekick; not enough players online (required: ", plugin.config.kick.minPlayers, ")!"));
-        }
-        plugin.startBooleanVote(src, Text.of(TextColors.GOLD, "kick ", p.getName(), " for ", reason), i -> {
-            if (plugin.config.mute.majority * (double) size <= i) {
-                p.kick(Text.of("Kicked by majority vote for ", reason));
-                return true;
-            } else {
-                return false;
-            }
-        }, plugin.config.time.duration);
-        return CommandResult.success();
     }
 
     public CommandResult time(CommandSource src, CommandContext args) throws CommandException {
