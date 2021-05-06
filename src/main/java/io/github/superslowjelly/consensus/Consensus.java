@@ -58,7 +58,6 @@ public class Consensus {
     Task task;
     Config config;
     Map<UUID, Instant> mutes = new HashMap<>();
-    WeatherListener listener;
 
     @Listener
     public void preInit(GamePreInitializationEvent e) throws IOException, ObjectMappingException {
@@ -81,19 +80,6 @@ public class Consensus {
         commands.registerCommands();
         if (task != null) {
             task.cancel();
-        }
-        if (listener != null) {
-            game.getEventManager().unregisterListeners(listener);
-        }
-        if (config.triggers.time.enabled) {
-            task = Task.builder()
-                    .name("consensus-S-TimeChecker")
-                    .interval(10, TimeUnit.SECONDS)
-                    .execute(new TimeTask(this))
-                    .submit(this);
-        }
-        if (config.triggers.weather.enabled) {
-            game.getEventManager().registerListeners(this, listener = new WeatherListener(this));
         }
 
     }

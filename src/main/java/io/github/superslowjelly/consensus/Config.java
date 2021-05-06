@@ -15,7 +15,6 @@ public class Config {
     public static final TypeToken<Config> type = TypeToken.of(Config.class);
 
     @Setting public TimeModule time = new TimeModule();
-    @Setting public TriggerHolder triggers = new TriggerHolder();
     @Setting public WeatherModule weather = new WeatherModule();
 
     @ConfigSerializable
@@ -32,28 +31,6 @@ public class Config {
 
     public static abstract class Module {
         @Setting public boolean enabled = false;
-    }
-
-    @ConfigSerializable
-    public static class TriggerHolder {
-        @Setting public TimeTriggerModule time = new TimeTriggerModule();
-        @Setting public WeatherTriggerModule weather = new WeatherTriggerModule();
-    }
-
-    @ConfigSerializable
-    public static class TimeTriggerModule extends Module {
-        @Setting public ListType type = ListType.BLACKLIST;
-        @Setting public List<String> worlds = Collections.emptyList();
-    }
-
-    @ConfigSerializable
-    public static class WeatherTriggerModule extends Module {
-        @Setting public ListType type = ListType.BLACKLIST;
-        @Setting public List<String> worlds = Collections.emptyList();
-    }
-
-    public enum ListType {
-        WHITELIST, BLACKLIST
     }
 
 }
