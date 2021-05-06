@@ -15,17 +15,11 @@ public class Config {
     public static final TypeToken<Config> type = TypeToken.of(Config.class);
 
     @Setting public TimeModule time = new TimeModule();
-    @Setting public CommandModule command = new CommandModule();
     @Setting public TriggerHolder triggers = new TriggerHolder();
     @Setting public WeatherModule weather = new WeatherModule();
 
     @ConfigSerializable
     public static class TimeModule extends PollModule { }
-
-    @ConfigSerializable
-    public static class CommandModule extends PollModule {
-        @Setting("allowed-commands") public List<String> allowedCommands = Collections.emptyList();
-    }
 
     @ConfigSerializable
     public static class WeatherModule extends PollModule { }

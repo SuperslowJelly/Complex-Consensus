@@ -59,16 +59,6 @@ public class Commands {
             poll.child(weather, "weather");
         }
 
-        if (plugin.config.command.enabled) {
-            CommandSpec command = CommandSpec.builder()
-                    .executor(this::command)
-                    .arguments(
-                            GenericArguments.remainingJoinedStrings(Text.of("command"))
-                    )
-                    .build();
-            poll.child(command, "command");
-        }
-
         CommandSpec dummy = CommandSpec.builder()
                 .executor(this::dummy)
                 .arguments(
@@ -152,27 +142,6 @@ public class Commands {
                 return false;
             }
         }, plugin.config.weather.duration);
-        return CommandResult.success();
-    }
-
-    public CommandResult command(CommandSource src, CommandContext args) throws CommandException {
-        String command = args.<String>getOne("command").get();
-        if (!src.hasPermission(Permissions.COMMAND_OVERRIDE)
-                && plugin.config.command.allowedCommands.stream().noneMatch(command::startsWith)) {
-            throw new CommandException(Text.of("This command cannot be used!"));
-        }
-        int size = game.getServer().getOnlinePlayers().size();
-        if (size < plugin.config.command.minPlayers) {
-            throw new CommandException(Text.of("Cannot vote to run a command; not enough players online (required: ", plugin.config.command.minPlayers, ")!"));
-        }
-        plugin.startBooleanVote(src, Text.of(TextColors.WHITE, "run the command ", command), i -> {
-            if (plugin.config.command.majority * (double) size <= i) {
-                game.getCommandManager().process(game.getServer().getConsole(), command);
-                return true;
-            } else {
-                return false;
-            }
-        }, plugin.config.command.duration);
         return CommandResult.success();
     }
 
