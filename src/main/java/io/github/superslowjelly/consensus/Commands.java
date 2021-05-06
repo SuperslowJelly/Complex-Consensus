@@ -1,4 +1,4 @@
-package flavor.pie.consensus;
+package io.github.superslowjelly.consensus;
 
 import com.google.inject.Inject;
 import org.spongepowered.api.CatalogTypes;

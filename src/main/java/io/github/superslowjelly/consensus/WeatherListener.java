@@ -1,4 +1,4 @@
-package flavor.pie.consensus;
+package io.github.superslowjelly.consensus;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;

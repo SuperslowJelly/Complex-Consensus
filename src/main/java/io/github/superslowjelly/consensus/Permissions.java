@@ -1,4 +1,4 @@
-package flavor.pie.consensus;
+package io.github.superslowjelly.consensus;
 
 public class Permissions {
     private Permissions() { }

@@ -1,4 +1,4 @@
-package flavor.pie.consensus;
+package io.github.superslowjelly.consensus;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;

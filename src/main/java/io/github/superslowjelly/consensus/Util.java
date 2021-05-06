@@ -1,4 +1,4 @@
-package flavor.pie.consensus;
+package io.github.superslowjelly.consensus;
 
 import java.time.Duration;
 import java.util.regex.Pattern;
