@@ -5,7 +5,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 public class TextBuilder {
 
-    public static final String PREFIX = "&8&l[&6&lConsensus&7&l-&e&lVote&8&l]&r";
+    public static final String PREFIX = "&8&l[&6&lCG&7&l-&e&lConsensus&8&l]&r";
 
     private final Text.Builder OUTPUT;
 
