@@ -91,18 +91,6 @@ public class Consensus {
         }
     }
 
-    @Listener
-    public void chat(MessageChannelEvent.Chat e, @First Player p) {
-        Instant mute = mutes.get(p.getUniqueId());
-        Instant now = Instant.now();
-        if (mute != null && mute.isAfter(now)) {
-            p.playSound(SoundTypes.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, p.getLocation().getPosition(), 10.0);
-            p.sendMessage(ChatTypes.ACTION_BAR, Text.of("You are muted for another ",
-                    Util.durationToString(Duration.between(now, mute))));
-            e.setCancelled(true);
-        }
-    }
-
     public void startBooleanVote(@Nullable CommandSource creator, Text action, IntPredicate consumer, Duration duration) {
         Set<UUID> set = new HashSet<>();
         Text msg = Text.of(TextColors.GREEN, (creator != null ? creator.getName() : "The server")
