@@ -23,6 +23,7 @@ public class Commands {
 
     @Inject
     private Consensus plugin;
+
     @Inject
     private Game game;
 

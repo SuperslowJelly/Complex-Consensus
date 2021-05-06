@@ -33,18 +33,23 @@ import java.util.function.IntPredicate;
 public class Consensus {
 
     @Inject
-    Game game;
-    @Inject @DefaultConfig(sharedRoot = true)
-    Path path;
-    @Inject @DefaultConfig(sharedRoot = true)
-    ConfigurationLoader<CommentedConfigurationNode> loader;
-    @Inject
-    Commands commands;
-    @Inject
-    Logger logger;
+    private Game game;
 
-    Task task;
-    Config config;
+    @Inject @DefaultConfig(sharedRoot = true)
+    private Path path;
+
+    @Inject @DefaultConfig(sharedRoot = true)
+    private ConfigurationLoader<CommentedConfigurationNode> loader;
+
+    @Inject
+    private Commands commands;
+
+    @Inject
+    private Logger logger;
+
+    private Task task;
+
+    public Config config;
 
     @Listener
     public void preInit(GamePreInitializationEvent e) throws IOException {
