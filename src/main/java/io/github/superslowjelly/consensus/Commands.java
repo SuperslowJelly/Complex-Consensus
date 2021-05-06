@@ -131,7 +131,7 @@ public class Commands {
         if (Consensus.instance.config.weather.minPlayers != 0 && size < Consensus.instance.config.time.minPlayers) {
             throw new CommandException(Text.of("Cannot vote to change the weather; not enough players online (required: ", Consensus.instance.config.weather.minPlayers, ")!"));
         }
-        Consensus.instance.startBooleanVote(src, "change the weather to " + weather.getName() + " in world '" + world.getName() + "'", i -> {
+        Consensus.instance.startBooleanVote(src, "change the weather to " + weather.getName().replace('_', ' ') + " in world '" + world.getName() + "'", i -> {
             if (Consensus.instance.config.weather.majority * (double) size <= i) {
                 world.setWeather(weather);
                 return true;
