@@ -10,18 +10,14 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.api.util.ban.Ban;
-import org.spongepowered.api.util.ban.BanTypes;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.weather.Weather;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
@@ -38,6 +34,7 @@ public class Commands {
 
         if (plugin.config.time.enabled) {
             CommandSpec time = CommandSpec.builder()
+                    .permission(Permissions.COMMAND_TIME_USE)
                     .executor(this::time)
                     .arguments(
                             GenericArguments.integer(Text.of("time")),
@@ -49,6 +46,7 @@ public class Commands {
 
         if (plugin.config.weather.enabled) {
             CommandSpec weather = CommandSpec.builder()
+                    .permission(Permissions.COMMAND_WEATHER_USE)
                     .executor(this::weather)
                     .arguments(
                             GenericArguments.catalogedElement(Text.of("weather"), CatalogTypes.WEATHER),
@@ -59,6 +57,7 @@ public class Commands {
         }
 
         CommandSpec dummy = CommandSpec.builder()
+                .permission(Permissions.COMMAND_DUMMY_USE)
                 .executor(this::dummy)
                 .arguments(
                         GenericArguments.text(Text.of("text"), TextSerializers.FORMATTING_CODE, true),
