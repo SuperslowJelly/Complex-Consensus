@@ -47,6 +47,8 @@ public class Consensus {
     @Inject
     private Logger logger;
 
+    public static Consensus instance;
+
     private Task task;
 
     public Config config;
@@ -69,6 +71,7 @@ public class Consensus {
     }
 
     private void register() {
+        instance = this;
         commands.registerCommands();
         if (task != null) {
             task.cancel();
