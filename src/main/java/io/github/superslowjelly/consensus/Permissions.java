@@ -3,7 +3,6 @@ package io.github.superslowjelly.consensus;
 public class Permissions {
     private Permissions() { }
 
-    public final static String BAN_EXEMPT = "consensus.exempt.ban";
     public final static String KICK_EXEMPT = "consensus.exempt.kick";
     public final static String MUTE_EXEMPT = "consensus.exempt.mute";
 

@@ -37,18 +37,6 @@ public class Commands {
         game.getCommandManager().getOwnedBy(plugin).forEach(game.getCommandManager()::removeMapping);
         CommandSpec.Builder poll = CommandSpec.builder();
 
-        if (plugin.config.ban.enabled) {
-            CommandSpec ban = CommandSpec.builder()
-                    .executor(this::ban)
-                    .arguments(
-                            GenericArguments.player(Text.of("player")),
-                            GenericArguments.optionalWeak(GenericArguments.duration(Text.of("duration"))),
-                            GenericArguments.text(Text.of("reason"), TextSerializers.FORMATTING_CODE, true)
-                    )
-                    .build();
-            poll.child(ban, "ban");
-        }
-
         if (plugin.config.mute.enabled) {
             CommandSpec mute = CommandSpec.builder()
                     .executor(this::mute)
@@ -114,39 +102,6 @@ public class Commands {
 
         poll.child(dummy, "dummy");
         game.getCommandManager().register(plugin, poll.build(), "poll");
-    }
-
-    public CommandResult ban(CommandSource src, CommandContext args) throws CommandException {
-        Player p = args.<Player>getOne("player").get();
-        Text reason = args.<Text>getOne("reason").get();
-        Duration duration = args.<Duration>getOne("duration").orElse(plugin.config.ban.maxDuration);
-        if (duration.compareTo(plugin.config.ban.maxDuration) > 0 && !src.hasPermission(Permissions.BAN_OVERRIDE)) {
-            throw new CommandException(Text.of("The maximum duration that players can be votebanned for is ", Util.durationToString(plugin.config.ban.maxDuration)));
-        }
-        if (p.hasPermission(Permissions.BAN_EXEMPT) && !src.hasPermission(Permissions.BAN_OVERRIDE)) {
-            throw new CommandException(Text.of("This person cannot be banned!"));
-        }
-        int size = game.getServer().getOnlinePlayers().size();
-        if (plugin.config.ban.minPlayers != 0 && size < plugin.config.ban.minPlayers) {
-            throw new CommandException(Text.of("Cannot voteban; not enough players online (required: ", plugin.config.ban.minPlayers, ")!"));
-        }
-        plugin.startBooleanVote(src, Text.of(TextColors.RED, "ban ", p.getName(), " for ", reason, " for ", Util.durationToString(duration)), i -> {
-            if (plugin.config.ban.majority * (double) size <= i) {
-                game.getServiceManager().provideUnchecked(BanService.class).addBan(Ban.builder()
-                        .type(BanTypes.PROFILE)
-                        .profile(p.getProfile())
-                        .expirationDate(Instant.now().plus(duration))
-                        .reason(reason)
-                        .source(Text.of("Majority vote"))
-                        .startDate(Instant.now())
-                        .build());
-                p.kick(Text.of("Banned by majority vote for ", reason, " for ", Util.durationToString(duration)));
-                return true;
-            } else {
-                return false;
-            }
-        }, plugin.config.time.duration);
-        return CommandResult.success();
     }
 
     public CommandResult mute(CommandSource src, CommandContext args) throws CommandException {
