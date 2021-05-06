@@ -23,7 +23,7 @@ public class Config {
 
     public static abstract class PollModule extends Module {
         @Setting public double majority = 0.5;
-        @Setting("min-players") public int minPlayers = 10;
+        @Setting("min-players") public int minPlayers = 0;
         @Setting public Duration duration = Duration.of(1, ChronoUnit.MINUTES);
     }
 
