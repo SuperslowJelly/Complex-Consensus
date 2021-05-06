@@ -20,6 +20,7 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.channel.MessageChannel;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -91,17 +92,21 @@ public class Consensus {
 
     public void startBooleanVote(@Nullable CommandSource creator, String action, IntPredicate consumer, Duration duration) {
         Set<UUID> set = new HashSet<>();
-        Text click = Text.builder("here")
+        Text click = Text.builder().append(TextBuilder.create("&ehere").build())
                 .onHover(TextActions.showText(TextBuilder.create("&aClick here to vote YES!").build()))
                 .onClick(TextActions.executeCallback(src -> {
                     if (src instanceof Player) {
-                        if (set.add(((Player) src).getUniqueId())) {
-                            src.sendMessage(TextBuilder.create(TextBuilder.PREFIX + " &aSuccessfuly voted YES to " + action).build());
-                        }
+                        Text response;
+                        if (src.hasPermission(Permissions.POLL_VOTE)) {
+                            if (set.add(((Player) src).getUniqueId())) {
+                                response = TextBuilder.create(TextBuilder.PREFIX + " &aSuccessfuly voted YES to " + action).build();
+                            } else response = TextBuilder.create(TextBuilder.PREFIX + " &cError: Something went wrong!").build();
+                        } else response = TextBuilder.create(TextBuilder.PREFIX + " &cError: You do not have permission to vote in polls!").build();
+                        src.sendMessage(response);
                     }
                 })).build();
         Text msg = TextBuilder.create()
-                .append(TextBuilder.PREFIX + " &e" + (creator != null ? creator.getName() : "The Server") + " &fhas begun a vote to &e" + action + "&f! Click &e")
+                .append(TextBuilder.PREFIX + " &e" + (creator != null ? creator.getName() : "The Server") + " &fhas begun a vote to &e" + action + "&f! Click ")
                 .append(click)
                 .append(" &fto vote &aYES&f!")
                 .build();
@@ -111,10 +116,11 @@ public class Consensus {
                 .execute(() -> {
                     TextBuilder textBuilder = TextBuilder.create(TextBuilder.PREFIX + " &fThe vote to &e" + action + " &fhas ");
                     if (consumer.test(set.size())) {
-                        game.getServer().getBroadcastChannel().send(textBuilder.append("&apassed!").build());
+                        textBuilder.append("&apassed&f!");
                     } else {
-                        game.getServer().getBroadcastChannel().send(textBuilder.append("&cfailed.").build());
+                        textBuilder.append("&cfailed&f.");
                     }
+                    MessageChannel.permission(Permissions.POLL_SEE).send(textBuilder.build());
                 })
                 .submit(this);
     }
