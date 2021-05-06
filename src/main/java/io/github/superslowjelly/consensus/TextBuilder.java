@@ -1,10 +1,7 @@
 package io.github.superslowjelly.consensus;
 
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializer;
 import org.spongepowered.api.text.serializer.TextSerializers;
-
-import java.util.HashMap;
 
 public class TextBuilder {
 

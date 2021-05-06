@@ -18,8 +18,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.format.TextColors;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,8 +28,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.IntPredicate;
-
-import javax.annotation.Nullable;
 
 @Plugin(id = "consensus", name = "Consensus", version = "1.2.2-SNAPSHOT", authors = "pie_flavor, SuperslowJelly", description = "Allows players to vote for things to happen.")
 public class Consensus {

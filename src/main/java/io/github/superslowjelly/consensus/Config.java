@@ -1,13 +1,10 @@
 package io.github.superslowjelly.consensus;
 
-import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
 
 @ConfigSerializable
 public class Config {
