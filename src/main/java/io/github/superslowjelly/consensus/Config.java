@@ -53,7 +53,7 @@ public class Config {
     }
 
     public enum ListType {
-        @SuppressWarnings("unused") WHITELIST, BLACKLIST
+        WHITELIST, BLACKLIST
     }
 
 }

@@ -25,7 +25,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-@SuppressWarnings({"NullableProblems", "Duplicates"})
 public class Commands {
 
     @Inject

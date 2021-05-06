@@ -24,6 +24,5 @@ public class ConfigUpdater {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private static <T extends Throwable> void rethrow(Throwable t) throws T { throw (T) t; }
 }
