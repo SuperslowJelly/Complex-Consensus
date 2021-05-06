@@ -63,7 +63,7 @@ public class Commands {
                 .permission(Permissions.COMMAND_DUMMY_USE)
                 .executor(this::dummy)
                 .arguments(
-                        GenericArguments.text(Text.of("text"), TextSerializers.FORMATTING_CODE, true),
+                        GenericArguments.string(Text.of("text")),
                         GenericArguments.optionalWeak(GenericArguments.doubleNum(Text.of("majority")), 0.5),
                         GenericArguments.optional(GenericArguments.duration(Text.of("duration")))
                 ).build();
@@ -92,7 +92,7 @@ public class Commands {
         if (plugin.config.time.minPlayers != 0 && size < plugin.config.time.minPlayers) {
             throw new CommandException(Text.of("Cannot vote to change the time; not enough players online (required: ", plugin.config.time.minPlayers, ")!"));
         }
-        plugin.startBooleanVote(src, Text.of(TextColors.AQUA, "change the time to ", time, " in world ", world.getWorldName()), i -> {
+        plugin.startBooleanVote(src, "change the time to " + time + " in the world " + world.getWorldName(), i -> {
             if (plugin.config.time.majority * (double) size <= i) {
                 long worldTime = world.getWorldTime();
                 int currentTime = (int) (worldTime % 24_000);
@@ -135,7 +135,7 @@ public class Commands {
         if (plugin.config.weather.minPlayers != 0 && size < plugin.config.time.minPlayers) {
             throw new CommandException(Text.of("Cannot vote to change the weather; not enough players online (required: ", plugin.config.weather.minPlayers, ")!"));
         }
-        plugin.startBooleanVote(src, Text.of(TextColors.DARK_AQUA, "change the weather to ", weather.getName(), " in world ", world.getName()), i -> {
+        plugin.startBooleanVote(src, "change the weather to " + weather.getName() + " in world " + world.getName(), i -> {
             if (plugin.config.weather.majority * (double) size <= i) {
                 world.setWeather(weather);
                 return true;
@@ -147,7 +147,7 @@ public class Commands {
     }
 
     public CommandResult dummy(CommandSource src, CommandContext args) throws CommandException {
-        Text text = args.<Text>getOne("text").get();
+        String text = args.<String>getOne("text").get();
         Duration duration = args.<Duration>getOne("duration").orElse(Duration.of(1, ChronoUnit.MINUTES));
         double majority = args.<Double>getOne("majority").get();
         int size = game.getServer().getOnlinePlayers().size();

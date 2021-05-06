@@ -2,41 +2,31 @@ package io.github.superslowjelly.consensus;
 
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
-import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.config.DefaultConfig;
-import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.Instant;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.function.IntPredicate;
 
 import javax.annotation.Nullable;
@@ -57,7 +47,6 @@ public class Consensus {
 
     Task task;
     Config config;
-    Map<UUID, Instant> mutes = new HashMap<>();
 
     @Listener
     public void preInit(GamePreInitializationEvent e) throws IOException {
@@ -81,7 +70,6 @@ public class Consensus {
         if (task != null) {
             task.cancel();
         }
-
     }
 
     public void loadConfig() throws IOException {
@@ -91,27 +79,31 @@ public class Consensus {
         }
     }
 
-    public void startBooleanVote(@Nullable CommandSource creator, Text action, IntPredicate consumer, Duration duration) {
+    public void startBooleanVote(@Nullable CommandSource creator, String action, IntPredicate consumer, Duration duration) {
         Set<UUID> set = new HashSet<>();
-        Text msg = Text.of(TextColors.GREEN, (creator != null ? creator.getName() : "The server")
-                , " has begun a vote to ", action, "! Click ", Text.builder("here").color(TextColors.GOLD)
-                .onHover(TextActions.showText(Text.of(TextColors.GREEN, "Click me!")))
+        Text click = Text.builder("here")
+                .onHover(TextActions.showText(TextBuilder.create("&aClick here to vote YES!").build()))
                 .onClick(TextActions.executeCallback(src -> {
                     if (src instanceof Player) {
                         if (set.add(((Player) src).getUniqueId())) {
-                            src.sendMessage(Text.of("Voted YES to ", action));
+                            src.sendMessage(TextBuilder.create(TextBuilder.PREFIX + " &aSuccessfuly voted YES to " + action).build());
                         }
                     }
-                })).build(), " to vote yes!");
+                })).build();
+        Text msg = TextBuilder.create()
+                .append(TextBuilder.PREFIX + " &e" + (creator != null ? creator.getName() : "The Server") + " &fhas begun a vote to &e" + action + "&f! Click ")
+                .append(click)
+                .append(" &fto vote &aYES&f!")
+                .build();
         game.getServer().getBroadcastChannel().send(msg);
         Task.builder()
                 .delayTicks(duration.getSeconds() * 20)
                 .execute(() -> {
-                    Text desc = Text.of(TextColors.GREEN, "The vote to ", action, " has ");
+                    TextBuilder textBuilder = TextBuilder.create(TextBuilder.PREFIX + " &fThe vote to &e" + action + " &fhas ");
                     if (consumer.test(set.size())) {
-                        game.getServer().getBroadcastChannel().send(desc.concat(Text.of(TextColors.GREEN, "passed.")));
+                        game.getServer().getBroadcastChannel().send(textBuilder.append("&apassed!").build());
                     } else {
-                        game.getServer().getBroadcastChannel().send(desc.concat(Text.of(TextColors.RED, "failed.")));
+                        game.getServer().getBroadcastChannel().send(textBuilder.append("&cfailed.").build());
                     }
                 })
                 .submit(this);
