@@ -12,8 +12,6 @@ import java.util.List;
 @ConfigSerializable
 public class Config {
 
-    public static final TypeToken<Config> type = TypeToken.of(Config.class);
-
     @Setting public TimeModule time = new TimeModule();
     @Setting public WeatherModule weather = new WeatherModule();
 

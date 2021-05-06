@@ -60,7 +60,7 @@ public class Consensus {
     Map<UUID, Instant> mutes = new HashMap<>();
 
     @Listener
-    public void preInit(GamePreInitializationEvent e) throws IOException, ObjectMappingException {
+    public void preInit(GamePreInitializationEvent e) throws IOException {
         loader.getDefaultOptions().getSerializers().registerType(TypeToken.of(Duration.class), new DurationSerializer());
         loadConfig();
     }
@@ -71,7 +71,7 @@ public class Consensus {
     }
 
     @Listener
-    public void reload(GameReloadEvent e) throws IOException, ObjectMappingException {
+    public void reload(GameReloadEvent e) throws IOException {
         loadConfig();
         register();
     }
@@ -84,18 +84,11 @@ public class Consensus {
 
     }
 
-    public void loadConfig() throws IOException, ObjectMappingException {
+    public void loadConfig() throws IOException {
         Asset cfg = game.getAssetManager().getAsset(this, "default.conf").get();
         if (!Files.exists(path)) {
             cfg.copyToFile(path);
         }
-        ConfigurationNode node = loader.load();
-        if (node.getNode("version").getInt() < 2) {
-            logger.info("Updating old config");
-            ConfigUpdater.t2(node);
-            loader.save(node);
-        }
-        config = node.getValue(Config.type);
     }
 
     @Listener
