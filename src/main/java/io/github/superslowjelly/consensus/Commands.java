@@ -34,6 +34,7 @@ public class Commands {
 
         if (plugin.config.time.enabled) {
             CommandSpec time = CommandSpec.builder()
+                    .description(Text.of("Used to start a poll to change the time for the optionally specified world."))
                     .permission(Permissions.COMMAND_TIME_USE)
                     .executor(this::time)
                     .arguments(
@@ -46,6 +47,7 @@ public class Commands {
 
         if (plugin.config.weather.enabled) {
             CommandSpec weather = CommandSpec.builder()
+                    .description(Text.of("Used to start a poll to change the weather for the optionally specified world."))
                     .permission(Permissions.COMMAND_WEATHER_USE)
                     .executor(this::weather)
                     .arguments(
@@ -57,6 +59,7 @@ public class Commands {
         }
 
         CommandSpec dummy = CommandSpec.builder()
+                .description(Text.of("Used to start a poll for any given subject."))
                 .permission(Permissions.COMMAND_DUMMY_USE)
                 .executor(this::dummy)
                 .arguments(
