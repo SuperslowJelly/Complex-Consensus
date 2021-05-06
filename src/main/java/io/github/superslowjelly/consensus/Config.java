@@ -1,5 +1,6 @@
 package io.github.superslowjelly.consensus;
 
+import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -8,6 +9,8 @@ import java.time.temporal.ChronoUnit;
 
 @ConfigSerializable
 public class Config {
+
+    public static final TypeToken<Config> type = TypeToken.of(Config.class);
 
     @Setting public TimeModule time = new TimeModule();
     @Setting public WeatherModule weather = new WeatherModule();

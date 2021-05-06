@@ -2,8 +2,10 @@ package io.github.superslowjelly.consensus;
 
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.asset.Asset;
@@ -54,7 +56,7 @@ public class Consensus {
     public Config config;
 
     @Listener
-    public void preInit(GamePreInitializationEvent e) throws IOException {
+    public void preInit(GamePreInitializationEvent e) throws IOException, ObjectMappingException {
         loader.getDefaultOptions().getSerializers().registerType(TypeToken.of(Duration.class), new DurationSerializer());
         loadConfig();
     }
@@ -65,7 +67,7 @@ public class Consensus {
     }
 
     @Listener
-    public void reload(GameReloadEvent e) throws IOException {
+    public void reload(GameReloadEvent e) throws IOException, ObjectMappingException {
         loadConfig();
         register();
     }
@@ -78,11 +80,13 @@ public class Consensus {
         }
     }
 
-    public void loadConfig() throws IOException {
+    public void loadConfig() throws IOException, ObjectMappingException {
         Asset cfg = game.getAssetManager().getAsset(this, "default.conf").get();
         if (!Files.exists(path)) {
             cfg.copyToFile(path);
         }
+        ConfigurationNode node = loader.load();
+        config = node.getValue(Config.type);
     }
 
     public void startBooleanVote(@Nullable CommandSource creator, String action, IntPredicate consumer, Duration duration) {
@@ -97,7 +101,7 @@ public class Consensus {
                     }
                 })).build();
         Text msg = TextBuilder.create()
-                .append(TextBuilder.PREFIX + " &e" + (creator != null ? creator.getName() : "The Server") + " &fhas begun a vote to &e" + action + "&f! Click ")
+                .append(TextBuilder.PREFIX + " &e" + (creator != null ? creator.getName() : "The Server") + " &fhas begun a vote to &e" + action + "&f! Click &e")
                 .append(click)
                 .append(" &fto vote &aYES&f!")
                 .build();
