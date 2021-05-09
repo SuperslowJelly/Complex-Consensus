@@ -14,6 +14,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.weather.Weather;
+import org.spongepowered.api.world.weather.Weathers;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -49,7 +50,7 @@ public class Commands {
                     .permission(Permissions.COMMAND_WEATHER_USE)
                     .executor(this::weather)
                     .arguments(
-                            GenericArguments.catalogedElement(Text.of("weather"), CatalogTypes.WEATHER),
+                            GenericArguments.string(Text.of("weather")),
                             GenericArguments.optional(GenericArguments.world(Text.of("world")))
                     )
                     .build();
@@ -132,7 +133,21 @@ public class Commands {
     }
 
     public CommandResult weather(CommandSource src, CommandContext args) throws CommandException {
-        Weather weather = args.<Weather>getOne("weather").get();
+        String input = args.<String>getOne("weather").get();
+        Weather weather;
+        switch (input) {
+            case "clear":
+                weather = Weathers.CLEAR;
+                break;
+            case "rain":
+                weather = Weathers.RAIN;
+                break;
+            case "thunder":
+                weather = Weathers.THUNDER_STORM;
+                break;
+            default:
+                throw new CommandException(Text.of(input + " is not a valid weather! Valid types: <clear|rain|thunder>!"));
+        }
         Optional<WorldProperties> props_ = args.getOne("world");
         WorldProperties props;
         if (props_.isPresent()) {
@@ -155,7 +170,7 @@ public class Commands {
         if (Consensus.instance.config.weather.minPlayers != 0 && size < Consensus.instance.config.time.minPlayers) {
             throw new CommandException(Text.of("Cannot vote to change the weather; not enough players online (required: ", Consensus.instance.config.weather.minPlayers, ")!"));
         }
-        Consensus.instance.startBooleanVote(src, "change the weather to " + weather.getName().replace('_', ' ') + " in world '" + world.getName() + "'", i -> {
+        Consensus.instance.startBooleanVote(src, "change the weather to " + input + " in world '" + world.getName() + "'", i -> {
             if (Consensus.instance.config.weather.majority * (double) size <= i) {
                 world.setWeather(weather);
                 return true;
