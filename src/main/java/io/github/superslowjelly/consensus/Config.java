@@ -14,12 +14,16 @@ public class Config {
 
     @Setting public TimeModule time = new TimeModule();
     @Setting public WeatherModule weather = new WeatherModule();
+    @Setting public DummyModule dummy = new DummyModule();
 
     @ConfigSerializable
     public static class TimeModule extends PollModule { }
 
     @ConfigSerializable
     public static class WeatherModule extends PollModule { }
+
+    @ConfigSerializable
+    public static class DummyModule extends PollModule { }
 
     public static abstract class PollModule extends Module {
         @Setting public double majority = 0.5;

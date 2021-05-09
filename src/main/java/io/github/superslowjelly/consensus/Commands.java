@@ -54,17 +54,20 @@ public class Commands {
             poll.child(weather, "weather");
         }
 
-        CommandSpec dummy = CommandSpec.builder()
-                .description(Text.of("Used to start a poll for any given subject."))
-                .permission(Permissions.COMMAND_DUMMY_USE)
-                .executor(this::dummy)
-                .arguments(
-                        GenericArguments.string(Text.of("text")),
-                        GenericArguments.optionalWeak(GenericArguments.doubleNum(Text.of("majority")), 0.5),
-                        GenericArguments.optional(GenericArguments.duration(Text.of("duration")))
-                ).build();
+        if (Consensus.instance.config.dummy.enabled) {
+            CommandSpec dummy = CommandSpec.builder()
+                    .description(Text.of("Used to start a poll for any given subject."))
+                    .permission(Permissions.COMMAND_DUMMY_USE)
+                    .executor(this::dummy)
+                    .arguments(
+                            GenericArguments.string(Text.of("text")),
+                            GenericArguments.optionalWeak(GenericArguments.doubleNum(Text.of("majority")), 0.5),
+                            GenericArguments.optional(GenericArguments.duration(Text.of("duration")))
+                    ).build();
 
-        poll.child(dummy, "dummy");
+            poll.child(dummy, "dummy");
+        }
+
         game.getCommandManager().register(Consensus.instance, poll.build(), "poll");
     }
 
