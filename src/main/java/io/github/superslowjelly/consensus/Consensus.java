@@ -116,9 +116,9 @@ public class Consensus {
                 .execute(() -> {
                     TextBuilder textBuilder = TextBuilder.create(TextBuilder.PREFIX + " &fThe vote to &e" + action + " &fhas ");
                     if (consumer.test(set.size())) {
-                        textBuilder.append("&apassed&f!");
+                        textBuilder.append("&apassed&f, enough people voted!");
                     } else {
-                        textBuilder.append("&cfailed&f.");
+                        textBuilder.append("&cfailed&f, not enough people voted!.");
                     }
                     MessageChannel.permission(Permissions.POLL_SEE).send(textBuilder.build());
                 })
