@@ -26,7 +26,9 @@ public class Commands {
 
     void registerCommands() {
         game.getCommandManager().getOwnedBy(Consensus.instance).forEach(game.getCommandManager()::removeMapping);
-        CommandSpec.Builder poll = CommandSpec.builder();
+        CommandSpec.Builder poll = CommandSpec.builder()
+                .description(Text.of("Used to start a poll."))
+                .permission(Permissions.COMMAND_POLL_USE);
 
         if (Consensus.instance.config.time.enabled) {
             CommandSpec time = CommandSpec.builder()

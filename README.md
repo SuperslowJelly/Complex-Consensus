@@ -34,3 +34,7 @@ and `duration`, how long a vote of this type lasts before resolving.
 `time{}`: The `time` mode doesn't have any settings of its own, but still has the aforementioned three common settings.
 
 `weather{}`: The `weather` mode doesn't have any settings of its own, but still has the aforementioned three common settings.
+
+### Permissions
+
+Current permissions can be found in [this class.](https://github.com/SuperslowJelly/Complex-Consensus/blob/master/src/main/java/io/github/superslowjelly/consensus/Permissions.java)
