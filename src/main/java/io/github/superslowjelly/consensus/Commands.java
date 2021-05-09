@@ -34,7 +34,7 @@ public class Commands {
                     .permission(Permissions.COMMAND_TIME_USE)
                     .executor(this::time)
                     .arguments(
-                            GenericArguments.integer(Text.of("time")),
+                            GenericArguments.string(Text.of("time")),
                             GenericArguments.optional(GenericArguments.world(Text.of("world")))
                     )
                     .build();
@@ -64,7 +64,6 @@ public class Commands {
                             GenericArguments.optionalWeak(GenericArguments.doubleNum(Text.of("majority")), 0.5),
                             GenericArguments.optional(GenericArguments.duration(Text.of("duration")))
                     ).build();
-
             poll.child(dummy, "dummy");
         }
 
@@ -72,9 +71,29 @@ public class Commands {
     }
 
     public CommandResult time(CommandSource src, CommandContext args) throws CommandException {
-        int time = args.<Integer>getOne("time").get();
-        if (time < 0 || time > 24_000) {
-            throw new CommandException(Text.of(time, " is not a valid time of day!"));
+        String input = args.<String>getOne("time").get();
+        int time;
+        switch (input) {
+            case "day":
+                time = 1000;
+                break;
+            case "noon":
+                time = 6000;
+                break;
+            case "sunset":
+                time = 12000;
+                break;
+            case "night":
+                time = 13000;
+                break;
+            case "midnight":
+                time = 18000;
+                break;
+            case "sunrise":
+                time = 23000;
+                break;
+            default:
+                throw new CommandException(Text.of(input + " is not a valid time of day! Valid times: <day|noon|sunset|night|midnight|sunrise>!"));
         }
         Optional<WorldProperties> world_ = args.getOne("world");
         WorldProperties world;
@@ -91,7 +110,7 @@ public class Commands {
         if (Consensus.instance.config.time.minPlayers != 0 && size < Consensus.instance.config.time.minPlayers) {
             throw new CommandException(Text.of("Cannot vote to change the time; not enough players online (required: ", Consensus.instance.config.time.minPlayers, ")!"));
         }
-        Consensus.instance.startBooleanVote(src, "change the time to " + time + " in the world '" + world.getWorldName() + "'", i -> {
+        Consensus.instance.startBooleanVote(src, "change the time to " + input + " in the world '" + world.getWorldName() + "'", i -> {
             if (Consensus.instance.config.time.majority * (double) size <= i) {
                 long worldTime = world.getWorldTime();
                 int currentTime = (int) (worldTime % 24_000);
